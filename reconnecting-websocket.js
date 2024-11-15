@@ -201,7 +201,7 @@
          */
         function generateEvent(s, args) {
             return new CustomEvent(s, { detail: args });
-        };
+        }
 
         this.open = function (reconnectAttempt) {
             ws = new WebSocket(self.url, protocols || []);
@@ -275,17 +275,9 @@
                 if (self.debug || ReconnectingWebSocket.debugAll) {
                     console.debug('ReconnectingWebSocket', 'onmessage', self.url, event.data);
                 }
-
-                try {
-
-                    var e = generateEvent('message');            
-                    e.data = JSON.parse(event.data)
-                    eventTarget.dispatchEvent(e);                    
-                    
-                } catch (e) {
-                    console.warn('ReconnectingWebSocket', 'onmessage', 'invalid json in message' , event.data);                    
-                }                
-
+                var e = generateEvent('message');
+                e.data = event.data;
+                eventTarget.dispatchEvent(e);
             };
             ws.onerror = function(event) {
                 if (self.debug || ReconnectingWebSocket.debugAll) {
