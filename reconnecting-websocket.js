@@ -200,9 +200,7 @@
          * @param args Object an optional object that the event will use
          */
         function generateEvent(s, args) {
-        	var evt = document.createEvent("CustomEvent");
-        	evt.initCustomEvent(s, false, false, args);
-        	return evt;
+            return new CustomEvent(s, { detail: args });
         };
 
         this.open = function (reconnectAttempt) {
@@ -277,9 +275,17 @@
                 if (self.debug || ReconnectingWebSocket.debugAll) {
                     console.debug('ReconnectingWebSocket', 'onmessage', self.url, event.data);
                 }
-                var e = generateEvent('message');
-                e.data = event.data;
-                eventTarget.dispatchEvent(e);
+
+                try {
+
+                    var e = generateEvent('message');            
+                    e.data = JSON.parse(event.data)
+                    eventTarget.dispatchEvent(e);                    
+                    
+                } catch (e) {
+                    console.warn('ReconnectingWebSocket', 'onmessage', 'invalid json in message' , event.data);                    
+                }                
+
             };
             ws.onerror = function(event) {
                 if (self.debug || ReconnectingWebSocket.debugAll) {
